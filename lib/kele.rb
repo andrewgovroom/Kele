@@ -1,10 +1,11 @@
 require 'httparty'
-require 'kele/roadmap'
+require './lib/kele'
+require 'json'
 
 
 class Kele
   include HTTParty
-  include Roadmap
+   base_uri "https://www.bloc.io/api/v1/"
   
  
 
@@ -12,6 +13,12 @@ class Kele
         response = self.class.post(base_api_endpoint("sessions"), body:{"email": email, "password": password})
         raise InvalidStudentCodeError.new() if response.code == 401
         @auth_token = response["auth_token"]
+    end
+
+    def get_me
+      response = self.class.get(api_url("users/me"), headers: { "authorization" => @auth_token })
+       @user_data = JSON.parse(response.body)
+    
     end
 
 
